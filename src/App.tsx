@@ -8,6 +8,7 @@ import { User } from './models/User';
 
 import './style.css';
 import { Group } from './models/Group';
+import { Policy } from './models/FiltersOptions';
 
 
 
@@ -101,7 +102,7 @@ const App: FC = () => {
             <select 
               name="groupsFilter" 
               id="groupsFilter"
-              onChange={(e) => store.setFilteredByPrivacy(e.target.value as 'any' | 'closed' | 'open')} >
+              onChange={(e) => store.setPolicy(e.target.value as Policy)} >
               <option value="any">Все сообщества</option>
               <option value="closed">Closed</option>
               <option value="open">Open</option>
@@ -109,7 +110,7 @@ const App: FC = () => {
 
             <select
               onChange={(e) =>
-                store.setFilteredByColor(e.target.value as 'any' | 'red')
+                store.setAvatarColor(e.target.value)
               }
             >
               <option value="any">Any</option>
