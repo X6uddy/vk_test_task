@@ -22,6 +22,9 @@ export default class Store {
 
     setGroups(groups: Group[]) {
         this.groups = groups;
+        if (this.filterOptions.avatarColor === 'any' && this.filterOptions.policy === 'any' && this.filterOptions.hasFriends === null) {
+            this.filteredGroups = groups;
+        }
     };
     setLoading(bool: boolean) {
         this.isLoading = bool;
@@ -32,27 +35,29 @@ export default class Store {
     };
     setPolicy(policy: Policy) {
         this.filterOptions.policy = policy;
+        this.setFilteredByOptions();
     };
     setAvatarColor(color: AvatarColor){
         this.filterOptions.avatarColor = color;
+        this.setFilteredByOptions();
     }
     setHasFriends(hasFriend: HasFriends){
         this.filterOptions.hasFriends = hasFriend;
+        this.setFilteredByOptions();
     }
 
 
-    setFilteredByOptions(privacy: 'any' | 'closed' | 'open') {
+    setFilteredByOptions() {
         let changePrivacy: boolean;
-        changePrivacy = privacy === 'open' ? false : true;
-        if(privacy === 'any') {
-            this.filteredGroups = this.groups;
-        } else {
-            changePrivacy = privacy === 'open' ? false : true;
-
-            this.filteredGroups = this.filteredGroups.length > 0 ? 
-                this.filteredGroups.filter((item) => item.closed === changePrivacy)
-                :
-                this.groups.filter((item) => item.closed === changePrivacy)
+        changePrivacy = this.filterOptions.policy === 'open' ? false : true;
+        if(this.filterOptions.policy !== 'any') {
+            this.filteredGroups = this.filteredGroups.filter((item) => item.closed === changePrivacy)
+        }
+        if(this.filterOptions.avatarColor !== 'any') {
+            this.filteredGroups = this.filteredGroups.filter((item) => item.closed === changePrivacy)
+        }
+        if(this.filterOptions.hasFriends !== null) {
+            this.filteredGroups = this.filteredGroups.filter((item) => item.friends.length > 0)
         }
     }
 
