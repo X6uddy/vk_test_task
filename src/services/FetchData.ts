@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import { GetGroupsResponse } from "../models/response/GetGroupsResponse ";
 import { Group } from "../models/Group";
-import axios from "axios";
 
 
 const fetchGroups = async (): Promise<GetGroupsResponse> => {
@@ -14,10 +15,3 @@ const fetchGroups = async (): Promise<GetGroupsResponse> => {
 };
 
 export default fetchGroups;
-
-
-// export default class FetchData {
-//   static async getGroups(): Promise<AxiosResponse<GetGroupsResponse>> {
-//     return axios.get<GetGroupsResponse>('http://localhost:3001/groups');
-//   }
-// }

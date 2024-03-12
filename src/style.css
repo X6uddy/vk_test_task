@@ -19,7 +19,8 @@ p {
 }
 
 .header {
-    position: fixed;
+    display: flex;
+    justify-content: center;
     top: 0;
     left: 0;
     width: 100%; 
@@ -29,11 +30,13 @@ p {
     z-index: 2;
 }
 .header__name {
-    font-size: 35px;
-    text-align: center;
+    font-size: 32px;
+    font-weight: normal;
+    color: #fff;
+    margin: 0;
 }
 
-#groupsFilter{
+.groupsFilter{
     display: inline-block;
     font-size: 16px;
     text-align: center;
@@ -42,12 +45,12 @@ p {
     border: none;
     border-radius: 8px;
     color: #fff;
+    margin-right: 10px;
 } 
-option:hover {
-    cursor: pointer;
-    background-color: #141414;
+label {
+    margin-right: 10px;
 }
-#groupsFilter:active {
+.groupsFilter:active {
     border: none;
 }
 .main__header span {
@@ -81,6 +84,10 @@ option:hover {
 .friends__fullname {
     color: rgb(98, 109, 122);
     font-size: 14px;
+}
+.groups__title {
+    margin-top: 15px;
+    color: rgb(98, 109, 122);
 }
 
 
@@ -134,5 +141,11 @@ option:hover {
     padding-bottom: 0;
 }
 
-
-
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+select {
+    width: 200px;
+}

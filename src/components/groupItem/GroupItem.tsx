@@ -1,8 +1,9 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext } from "react";
+import { observer } from 'mobx-react-lite';
+
 import { Group } from "../../models/Group";
 import { Context } from "../../index";
 import FriendList from "../friendList/FriendList";
-import { observer } from 'mobx-react-lite';
 interface GroupItemProps {
   group: Group;
 }
@@ -20,8 +21,8 @@ const GroupItem: FC<GroupItemProps> = ({group}) => {
     <div className="groups__item-info">
       <p className="item__name">{group.name}</p>
       <p className="item__closed">{group.closed ? 'Закрытая группа' : 'Открытая группа'}</p>
-      <p className="item__members">{group.members_count} подписчиков</p>
-      <p className="item__friends">Друзей в группе:{group.friends ? group.friends.length : 0 }</p>
+      <p className="item__members">Подписчиков: {group.members_count}</p>
+      <p className="item__friends">Друзей в группе: {group.friends ? group.friends.length : 0 }</p>
 
       {group.friends && group.friends.length > 0 && (
         <>

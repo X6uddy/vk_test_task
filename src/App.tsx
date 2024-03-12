@@ -1,14 +1,13 @@
-import { useState, useEffect, FC, useContext } from 'react';
+import { useEffect, FC, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import GroupItem from './components/groupItem//GroupItem';
 import { Context } from './index';
-import fetchGroups from './services/FetchData';
-import { User } from './models/User';
-
-import './style.css';
 import { Group } from './models/Group';
-import { Policy } from './models/FiltersOptions';
+import { HasFriends, Policy } from './models/FiltersOptions';
+
+import logo from './resources/icons//logo.svg';
+import './style.css';
 
 
 
@@ -18,115 +17,96 @@ const App: FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await store.getAllGroups();
-        if (res?.result === 1 && res?.data !== undefined) {
-          store.setGroups(res.data)
-        }
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await store.getAllGroups();
+      } catch (e) {
+        throw new Error('Error fetching')
+      }
     }
 
     fetchData();
-  }, []);
-
-
-  // const applyFilters = () => {
-  //   let filtered = state.groups;
-
-  //   if (state.filterOptions.privacy !== 'all') {
-  //     filtered = filtered.filter((group) =>
-  //       state.filterOptions.privacy === 'closed' ? group.closed : !group.closed
-  //     );
-  //   }
-
-  //   if (state.filterOptions.avatarColor !== 'any') {
-  //     filtered = filtered.filter((group) =>
-  //       group.avatar_color === state.filterOptions.avatarColor
-  //     );
-  //   }
-
-  //   if (state.filterOptions.hasFriends) {
-  //     filtered = filtered.filter((group) => group.friends && group.friends.length > 0);
-  //   }
-
-  //   setState((prevState) => ({ ...prevState, filteredGroups: filtered }));
-  // };
-
-  // const handleFilterChange = (key: keyof AppState['filterOptions'], value: any) => {
-  //   setState((prevState) => ({
-  //     ...prevState,
-  //     filterOptions: { ...prevState.filterOptions, [key]: value },
-  //   }));
-  // };
+  }, [store]);
 
   return (
     <div>
-      {/* <div>
-        <label>Privacy:</label>
-        <select
-          value={state.filterOptions.privacy}
-          onChange={(e) => handleFilterChange('privacy', e.target.value as 'all' | 'closed' | 'open')}
-        >
-          <option value="all">All</option>
-          <option value="closed">Closed</option>
-          <option value="open">Open</option>
-        </select>
-      </div>
+      <header className="header">
+        <img src={logo} alt="logoVk" />
+        <h1 className="header__name">вконтакте</h1>
+      </header>
 
-      <div>
-        <label>Avatar Color:</label>
-        <select
-          value={state.filterOptions.avatarColor}
-          onChange={(e) =>
-            handleFilterChange('avatarColor', e.target.value as 'any' | string)
-          }
-        >
-          <option value="any">Any</option>
-        </select>
-      </div>
+      <main>
+        <div className="container">
+          <div className="filters">
+            <div>
+              <select 
+                disabled={store.isLoading}
+                id='privacy'
+                name="groupsFilter" 
+                className="groupsFilter"
+                onChange={(e) => store.setPolicy(e.target.value as Policy)} >
+                <option value="any">Любой</option>
+                <option value="closed">Closed</option>
+                <option value="open">Open</option>
+              </select>
+              <label htmlFor="privacy">Тип приватности</label>
+            </div>
 
-      <div>
-        <label>Has Friends:</label>
-        <input
-          type="checkbox"
-          checked={state.filterOptions.hasFriends}
-          onChange={(e) => handleFilterChange('hasFriends', e.target.checked)}
-        />
-      </div> */}
+            <div>
+              <select
+                disabled={store.isLoading}
+                id='avatarColor'
+                className="groupsFilter"
+                onChange={(e) => store.setAvatarColor(e.target.value)}
+              >
+                <option value="any">Любой</option>
+                {store.avatarColors.map((item, i) => (
+                  <option style={{color: item}} value={item} key={i}>{item}</option>
+                ))}
+              </select>
+              <label htmlFor="avatarColor">Цвет аватарки</label>
+            </div>
 
-      <>
-        <header className="header">
-          {/* <p className="header__name">вконтакте</p> */}
-        </header>
-
-        <main>
-          <div className="container">
-            <select 
-              name="groupsFilter" 
-              id="groupsFilter"
-              onChange={(e) => store.setPolicy(e.target.value as Policy)} >
-              <option value="any">Все сообщества</option>
-              <option value="closed">Closed</option>
-              <option value="open">Open</option>
-            </select>
-
-            <select
-              onChange={(e) =>
-                store.setAvatarColor(e.target.value)
-              }
-            >
-              <option value="any">Any</option>
-              <option value="red">Red</option>
-            </select>
-            
-            <ul className="groups">
-              {store.filteredGroups.length > 0 ? 
-                store.filteredGroups.map((item: Group) => ( <GroupItem group={item} key={item.id} />))
-                :
-                store.groups.map((item: Group) => ( <GroupItem group={item} key={item.id} />))
-              }
-            </ul>
+            <div>
+              <select
+                disabled={store.isLoading}
+                id='hasFriends'
+                className="groupsFilter"
+                onChange={(e) =>
+                  store.setHasFriends(e.target.value as HasFriends)
+                }
+              >
+                <option value="any">Неважно</option>
+                <option value="true">Есть друзья в группе</option>
+                <option value="false">Нет друзей в группе</option>
+              </select>
+              <label htmlFor="hasFriends">Наличие друзей в группе</label>
+            </div>
           </div>
-        </main>
-      </>
+
+          {/* <input
+            type="checkbox"
+            checked={store.filterOptions.hasFriends ? store.filterOptions.hasFriends : undefined}
+            onChange={(e) => store.setHasFriends(e.target.checked)}
+          /> Наличие друзей в группе */} 
+          {/* Изначально я хотел сделать чтобы по чекбоксу определялось наличие друзей, но не совсем ясно должен ли чекбокс при checked=false 
+          показывать только группы где нет друзей или должен показывать все группы(и с друзьями и без). поэтому я выбрал селект взамен чекбокса */}
+          {store.isLoading ?  
+            <h2>Loading data...</h2> 
+            : 
+            <>
+              <p className='groups__title'>Количество групп: {store.filteredGroups.length}</p>
+              <ul className="groups">
+                {store.filteredGroups.length > 0 ? 
+                  store.filteredGroups.map((item: Group) => ( <GroupItem group={item} key={item.id} />))
+                  :
+                  <p>Групп, удовлетворяющих таким фильтрам нет *_*</p>
+                }
+              </ul>
+            </>
+          }
+        </div>
+      </main>
     </div>
   );
 };

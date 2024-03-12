@@ -1,4 +1,5 @@
 import {makeAutoObservable} from "mobx";
+
 import { User } from "../models/User";
 import { Group } from "../models/Group";
 import fetchGroups from "../services/FetchData";
@@ -6,15 +7,16 @@ import FilterOptions, { AvatarColor, HasFriends, Policy } from "../models/Filter
 
 export default class Store {
     groups = [] as Group[]
-    filteredGroups = [] as Group[];
-    isLoading = false;
+    filteredGroups = [] as Group[] | [];
+    isLoading = true;
     selectedGroup = 0 as number;
     selectedFriends = [] as User[];
     filterOptions : FilterOptions= {
         policy: 'any',
         avatarColor: 'any',
-        hasFriends: null
+        hasFriends: 'any'
     };
+    avatarColors = [] as (string | undefined)[];
 
     constructor() {
         makeAutoObservable(this);
@@ -22,9 +24,8 @@ export default class Store {
 
     setGroups(groups: Group[]) {
         this.groups = groups;
-        if (this.filterOptions.avatarColor === 'any' && this.filterOptions.policy === 'any' && this.filterOptions.hasFriends === null) {
-            this.filteredGroups = groups;
-        }
+        this.filteredGroups = this.filteredGroups.length > 0 ? this.filteredGroups : groups
+        this.avatarColors = [...new Set(groups.map(group => group.avatar_color))].filter(color => color !== undefined)
     };
     setLoading(bool: boolean) {
         this.isLoading = bool;
@@ -50,14 +51,17 @@ export default class Store {
     setFilteredByOptions() {
         let changePrivacy: boolean;
         changePrivacy = this.filterOptions.policy === 'open' ? false : true;
+        this.filteredGroups = this.groups;
         if(this.filterOptions.policy !== 'any') {
-            this.filteredGroups = this.filteredGroups.filter((item) => item.closed === changePrivacy)
+            this.filteredGroups = this.filteredGroups.filter((item) => item.closed === changePrivacy);
         }
         if(this.filterOptions.avatarColor !== 'any') {
-            this.filteredGroups = this.filteredGroups.filter((item) => item.closed === changePrivacy)
+            this.filteredGroups = this.filteredGroups.filter((item) => item.avatar_color === this.filterOptions.avatarColor);
         }
-        if(this.filterOptions.hasFriends !== null) {
-            this.filteredGroups = this.filteredGroups.filter((item) => item.friends.length > 0)
+        if(this.filterOptions.hasFriends !== 'any') {
+            if (this.filterOptions.hasFriends === 'true') {
+                this.filteredGroups = this.filteredGroups.filter(item => item.friends);
+            } else this.filteredGroups = this.filteredGroups.filter(item => !item.friends);
         }
     }
 
